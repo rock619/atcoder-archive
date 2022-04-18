@@ -1,0 +1,60 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+)
+
+const max int64 = 1_000_000_000_000_000_000
+
+func solve(A int64, B int64) {
+	lcm, large := LCM(A, B)
+	if large {
+		fmt.Println("Large")
+		return
+	}
+	fmt.Println(lcm)
+}
+
+func LCM(a, b int64) (lcm int64, large bool) {
+	gcd := GCD(a, b)
+	if a < b {
+		a, b = b, a
+	}
+	if a/gcd > max/b {
+		large = true
+	}
+	return a / gcd * b, large
+}
+
+func GCD(a, b int64) int64 {
+	for a > 0 && b > 0 {
+		if a < b {
+			b = b % a
+		} else {
+			a = a % b
+		}
+	}
+
+	if a > 0 {
+		return a
+	}
+	return b
+}
+
+func main() {
+	scanner := bufio.NewScanner(os.Stdin)
+	const initialBufSize = 4096
+	const maxBufSize = 1000000
+	scanner.Buffer(make([]byte, initialBufSize), maxBufSize)
+	scanner.Split(bufio.ScanWords)
+	var A int64
+	scanner.Scan()
+	A, _ = strconv.ParseInt(scanner.Text(), 10, 64)
+	var B int64
+	scanner.Scan()
+	B, _ = strconv.ParseInt(scanner.Text(), 10, 64)
+	solve(A, B)
+}
