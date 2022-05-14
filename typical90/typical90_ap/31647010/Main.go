@@ -1,0 +1,58 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+)
+
+const mod = 1000000007
+
+func solve(K int64) {
+	w := bufio.NewWriter(os.Stdout)
+	defer func() {
+		if err := w.Flush(); err != nil {
+			panic(err)
+		}
+	}()
+
+	if K%9 != 0 {
+		fmt.Fprintln(w, 0)
+		return
+	}
+
+	dp := make([]int64, K+1)
+	dp[0] = 1
+	for i := int64(1); i <= K; i++ {
+		b := int64(9)
+		if b > i {
+			b = i
+		}
+		for j := int64(1); j <= b; j++ {
+			dp[i] += dp[i-j]
+			dp[i] %= mod
+		}
+	}
+	fmt.Fprintln(w, dp[K])
+}
+
+func main() {
+	scanner := bufio.NewScanner(os.Stdin)
+	const initialBufSize = 4096
+	const maxBufSize = 1048576
+	scanner.Buffer(make([]byte, initialBufSize), maxBufSize)
+	scanner.Split(bufio.ScanWords)
+
+	var err error
+	scanner.Scan()
+	K, err := strconv.ParseInt(scanner.Text(), 10, 64)
+	if err != nil {
+		panic(err)
+	}
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
+
+	solve(K)
+}
